@@ -8,8 +8,6 @@ import {
   CreateAccountOutput,
   DeleteAccountInput,
   DeleteAccountOutput,
-  FindAccountByEmailInput,
-  FindAccountByEmailOutput,
   FindAccountByIdInput,
   FindAccountByIdOutput,
   FindAccountsOutput,
@@ -32,12 +30,12 @@ export class AccountService {
     return this.repository.findById(id);
   }
 
-  public async perform({ email }: FindAccountByEmailInput): Promise<FindAccountByEmailOutput> {
-    return this.repository.findByEmail(email);
-  }
-
   public async create(input: CreateAccountInput): Promise<CreateAccountOutput> {
     const account = new Account(input);
+
+    const emailAlreadyExists = await this.repository.findByEmail(account.email);
+
+    if (emailAlreadyExists) throw new Error('Email already in use.');
 
     account.id = randomUUID();
 
