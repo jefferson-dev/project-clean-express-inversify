@@ -12,14 +12,18 @@ export abstract class Repository<T extends Entity> implements IRepository<T> {
     return this.repository;
   }
 
+  public async findByKey(key: keyof Omit<T, 'toObject'>, value: string): Promise<T | undefined> {
+    return this.repository.find((i) => i[key] === value);
+  }
+
   public async findById(id: string): Promise<T | undefined> {
     return this.repository.find((i) => i.id === id);
   }
 
   public async create(input: T): Promise<T> {
-    this.repository.push(input.toObject());
+    this.repository.push(input);
 
-    return input.toObject();
+    return input;
   }
 
   public async delete(id: string): Promise<void> {

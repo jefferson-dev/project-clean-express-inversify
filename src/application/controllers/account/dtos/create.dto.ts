@@ -1,4 +1,4 @@
-import { AccountData } from '../../domain/account/entity/account';
+import { AccountData } from '../../../../domain/account/entity/account';
 
 export type CreateAccountInput = {
   name: string;

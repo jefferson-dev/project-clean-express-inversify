@@ -1,13 +1,14 @@
+import { randomUUID } from 'node:crypto';
 import { Entity } from '../../abstrations/Entity';
 
-export class AccountData {
+export type AccountData = {
   id?: string;
   name: string;
   email: string;
   password: string;
-}
+};
 
-export class Account extends Entity<string, AccountData> {
+export class Account extends Entity<string> {
   private _name: string;
   private _email: string;
   private _password: string;
@@ -36,12 +37,34 @@ export class Account extends Entity<string, AccountData> {
     return this._password;
   }
 
-  constructor(input: AccountData) {
-    super(),
-      (this.id = input.id ?? undefined),
-      (this.name = input.name),
-      (this.email = input.email),
-      (this.password = input.password),
-      this.setEntity(input);
+  static create(input: AccountData) {
+    const account = new Account();
+
+    account.id = randomUUID();
+    account.name = input.name;
+    account.email = input.email;
+    account.password = input.password;
+
+    return account;
+  }
+
+  static update(input: AccountData) {
+    const account = new Account();
+
+    account.id = input.id;
+    account.name = input.name;
+    account.email = input.email;
+    account.password = input.password;
+
+    return account;
+  }
+
+  public toObject() {
+    return {
+      id: this.id,
+      name: this.name,
+      email: this.email,
+      password: this.password,
+    };
   }
 }

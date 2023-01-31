@@ -23,29 +23,39 @@ export class AccountService {
   ) {}
 
   public async find(): Promise<FindAccountsOutput> {
-    return this.repository.find();
+    const result = await this.repository.find();
+
+    return result.length ? result.map((i) => i.toObject()) : result;
   }
 
   public async findById({ id }: FindAccountByIdInput): Promise<FindAccountByIdOutput> {
-    return this.repository.findById(id);
+    const result = await this.repository.findById(id);
+
+    if (!result) throw new Error('Account not found');
+
+    return result.toObject();
   }
 
   public async create(input: CreateAccountInput): Promise<CreateAccountOutput> {
-    const account = new Account(input);
+    const account = Account.create(input);
 
-    const emailAlreadyExists = await this.repository.findByEmail(account.email);
+    const emailAlreadyExists = await this.repository.findByKey('email', account.email);
 
     if (emailAlreadyExists) throw new Error('Email already in use.');
 
-    account.id = randomUUID();
+    const result = await this.repository.create(account);
 
-    return this.repository.create(account);
+    return result.toObject();
   }
 
   public async update(input: UpdateAccountInput): Promise<UpdateAccountOutput> {
-    const account = new Account(input);
+    const account = Account.update(input);
 
-    return this.repository.update(account);
+    const result = await this.repository.update(account);
+
+    if (!result) throw new Error('No account has been updated');
+
+    return result.toObject();
   }
 
   public async delete({ id }: DeleteAccountInput): Promise<DeleteAccountOutput> {
